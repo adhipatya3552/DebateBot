@@ -1,7 +1,11 @@
 # ⚖️ DebateBot — Multi-Agent AI Reasoning System
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://debatebot-adhipatya.streamlit.app/)
+
 > **DebateBot** is an advanced multi-agent AI reasoning platform that takes any complex topic or decision, runs it through opposing advocate agents, and delivers a rigorous, objective final judgment. 
 > Built for the **Microsoft Agents League Hackathon 2026 — Reasoning Agents Track**.
+>
+> **🔗 Live Demo:** [debatebot-adhipatya.streamlit.app](https://debatebot-adhipatya.streamlit.app/)
 
 ---
 
@@ -47,7 +51,7 @@ Instead of a single LLM prompt, DebateBot simulates a structured debate panel wh
 | **LLM Inference** | Llama 3.3 70B / Llama 3.1 8B via Groq | **$0** | Lightning-fast inference (no token latency) |
 | **Agent Framework** | LangChain | **$0** | Handles chains, templates, and multi-agent routing |
 | **Frontend UI** | Streamlit | **$0** | Elegant, high-performance interactive interface |
-| **Deployment** | Streamlit Cloud | **$0** | Live-hosted web app |
+| **Deployment** | Streamlit Cloud | **$0** | Live-hosted web app at [debatebot-adhipatya.streamlit.app](https://debatebot-adhipatya.streamlit.app/) |
 
 ---
 
