@@ -232,14 +232,19 @@ def render_arguments(text, side_class):
     if intro:
         html_output.append(f'<div class="arg-intro" style="margin-bottom: 15px; font-style: italic;">{intro}</div>')
         
+    # Strict markers
+    claim_marker = r'(?:🔹\s*\*?\*?Claim\*?\*?|\*?\*?Claim\*?\*?\s*:)'
+    evidence_marker = r'(?:📊\s*\*?\*?Evidence\*?\*?|\*?\*?Evidence\*?\*?\s*:)'
+    impact_marker = r'(?:💡\s*\*?\*?Impact\*?\*?|\*?\*?Impact\*?\*?\s*:)'
+
     for i, block in enumerate(arg_blocks, 1):
         block = block.strip()
         if not block:
             continue
             
-        claim_match = re.search(r'(?:🔹\s*)?(?:\*?\*?Claim\*?\*?:?)\s*(.*?)(?=(?:📊\s*)?(?:\*?\*?Evidence\*?\*?:?)|(?:💡\s*)?(?:\*?\*?Impact\*?\*?:?)|$)', block, re.DOTALL | re.IGNORECASE)
-        evidence_match = re.search(r'(?:📊\s*)?(?:\*?\*?Evidence\*?\*?:?)\s*(.*?)(?=(?:💡\s*)?(?:\*?\*?Impact\*?\*?:?)|$)', block, re.DOTALL | re.IGNORECASE)
-        impact_match = re.search(r'(?:💡\s*)?(?:\*?\*?Impact\*?\*?:?)\s*(.*?)$', block, re.DOTALL | re.IGNORECASE)
+        claim_match = re.search(r'(?:🔹\s*)?(?:\*?\*?Claim\*?\*?:?)\s*(.*?)(?=' + claim_marker + '|' + evidence_marker + '|' + impact_marker + '|$)', block, re.DOTALL | re.IGNORECASE)
+        evidence_match = re.search(evidence_marker + r'\s*(.*?)(?=' + impact_marker + '|$)', block, re.DOTALL | re.IGNORECASE)
+        impact_match = re.search(impact_marker + r'\s*(.*?)$', block, re.DOTALL | re.IGNORECASE)
         
         claim = claim_match.group(1).strip() if claim_match else ""
         evidence = evidence_match.group(1).strip() if evidence_match else ""
@@ -269,6 +274,64 @@ def render_arguments(text, side_class):
 </div>""")
             
     return "\n".join(html_output)
+
+def render_strongest_argument(text):
+    import re
+    text = text.strip()
+    
+    quote = ""
+    explanation = ""
+    
+    # Match quote blocks like "[quote]" [explanation]
+    quote_match = re.match(r'^["\'“]\s*(.*?)\s*["\'”]\s*(?:-|—|:\s*)?\s*(.*)$', text, re.DOTALL)
+    if quote_match:
+        quote = quote_match.group(1).strip()
+        explanation = quote_match.group(2).strip()
+    else:
+        explanation_split = re.split(r'(?i)(?=\b(?:this argument|it stands out|the judge|reasoning|explanation|why:)\b)', text, maxsplit=1)
+        if len(explanation_split) > 1:
+            quote = explanation_split[0].strip()
+            explanation = explanation_split[1].strip()
+        else:
+            quote = text
+            explanation = ""
+            
+    # Strict markers
+    claim_marker = r'(?:🔹\s*\*?\*?Claim\*?\*?|\*?\*?Claim\*?\*?\s*:)'
+    evidence_marker = r'(?:📊\s*\*?\*?Evidence\*?\*?|\*?\*?Evidence\*?\*?\s*:)'
+    impact_marker = r'(?:💡\s*\*?\*?Impact\*?\*?|\*?\*?Impact\*?\*?\s*:)'
+    
+    claim_match = re.search(r'(?:🔹\s*)?(?:\*?\*?Claim\*?\*?:?)\s*(.*?)(?=' + claim_marker + '|' + evidence_marker + '|' + impact_marker + '|$)', quote, re.DOTALL | re.IGNORECASE)
+    evidence_match = re.search(evidence_marker + r'\s*(.*?)(?=' + impact_marker + '|$)', quote, re.DOTALL | re.IGNORECASE)
+    impact_match = re.search(impact_marker + r'\s*(.*?)$', quote, re.DOTALL | re.IGNORECASE)
+    
+    claim = claim_match.group(1).strip() if claim_match else ""
+    evidence = evidence_match.group(1).strip() if evidence_match else ""
+    impact = impact_match.group(1).strip() if impact_match else ""
+    
+    claim = clean_markdown_bold(claim)
+    evidence = clean_markdown_bold(evidence)
+    impact = clean_markdown_bold(impact)
+    
+    quote_html = ""
+    if claim or evidence or impact:
+        evidence_html = f'<div class="arg-label" style="font-size: 0.75rem; margin-top: 6px; margin-bottom: 2px;">📊 Evidence</div><div class="arg-detail" style="font-size: 0.88rem;">{evidence}</div>' if evidence else ''
+        impact_html = f'<div class="arg-label" style="font-size: 0.75rem; margin-top: 6px; margin-bottom: 2px;">💡 Impact</div><div class="arg-detail" style="font-size: 0.88rem;">{impact}</div>' if impact else ''
+        quote_html = f"""<div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(128, 128, 128, 0.15); border-radius: 8px; padding: 12px 16px; margin-bottom: 12px;">
+<div style="font-weight: 700; font-size: 0.95rem; color: #007AFF;">🔹 {claim}</div>
+{evidence_html}
+{impact_html}
+</div>"""
+    else:
+        quote_html = f'<blockquote style="border-left: 3px solid #007AFF; padding-left: 10px; margin: 0 0 10px 0; font-style: italic; opacity: 0.85;">"{quote}"</blockquote>'
+        
+    explanation_html = f'<p style="margin: 0; line-height: 1.5; font-size: 0.92rem; opacity: 0.9;">{explanation}</p>' if explanation else ''
+    
+    return f"""<div style="margin-bottom: 20px; padding: 15px; background: rgba(128, 128, 128, 0.05); border-radius: 8px; border-left: 3px solid #007AFF;">
+<h4 style="margin: 0 0 8px 0; color: #007AFF; font-size: 1.15rem;">⚡ Strongest Argument</h4>
+{quote_html}
+{explanation_html}
+</div>"""
 
 def render_verdict(text):
     import re
@@ -327,11 +390,7 @@ def render_verdict(text):
 </div>""")
         
     if "strongest" in sections:
-        strongest_val = clean_markdown_bold(sections["strongest"])
-        html_output.append(f"""<div style="margin-bottom: 20px; padding: 15px; background: rgba(128, 128, 128, 0.05); border-radius: 8px; border-left: 3px solid #007AFF;">
-<h4 style="margin: 0 0 8px 0; color: #007AFF; font-size: 1.15rem;">⚡ Strongest Argument</h4>
-<p style="font-size: 0.95rem; line-height: 1.6; margin: 0; font-style: italic;">{strongest_val}</p>
-</div>""")
+        html_output.append(render_strongest_argument(sections["strongest"]))
         
     if "blind_spot" in sections:
         blind_spot_val = clean_markdown_bold(sections["blind_spot"])
