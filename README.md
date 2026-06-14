@@ -1,7 +1,5 @@
 # ⚖️ DebateBot — Multi-Agent AI Reasoning System
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://debatebot-adhipatya.streamlit.app/)
-
 > **DebateBot** is an advanced multi-agent AI reasoning platform that takes any complex topic or decision, runs it through opposing advocate agents, and delivers a rigorous, objective final judgment. 
 > Built for the **Microsoft Agents League Hackathon 2026 — Reasoning Agents Track**.
 >
