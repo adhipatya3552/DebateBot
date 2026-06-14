@@ -1,6 +1,22 @@
 import streamlit as st
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
+import os
+
+# Try to find Groq key from environment or local .env file
+def get_default_api_key():
+    key = os.environ.get("GROQ_API_KEY", "")
+    if not key and os.path.exists(".env"):
+        try:
+            with open(".env", "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.startswith("GROQ_API_KEY="):
+                        return line.split("=", 1)[1].strip().strip('"').strip("'")
+        except:
+            pass
+    return key
+
+default_key = get_default_api_key()
 
 # ── Page Config ──────────────────────────────────────────────
 st.set_page_config(
@@ -152,6 +168,7 @@ with st.sidebar:
     st.header("⚙️ Settings")
     api_key = st.text_input(
         "Groq API Key",
+        value=default_key,
         type="password",
         help="Get a free key at console.groq.com — no credit card required!"
     )
@@ -233,27 +250,23 @@ def render_arguments(text, side_class):
         impact = clean_markdown_bold(impact)
         
         if not claim and not evidence and not impact:
-            html_output.append(f"""
-            <div class="arg-card">
-                <div style="display: flex; align-items: flex-start;">
-                    <div class="arg-number {side_class}-num">{i}</div>
-                    <div class="arg-detail" style="white-space: pre-wrap;">{block}</div>
-                </div>
-            </div>
-            """)
+            html_output.append(f"""<div class="arg-card">
+<div style="display: flex; align-items: flex-start;">
+<div class="arg-number {side_class}-num">{i}</div>
+<div class="arg-detail" style="white-space: pre-wrap;">{block}</div>
+</div>
+</div>""")
         else:
             evidence_html = f'<div class="arg-label">📊 Evidence</div><div class="arg-detail">{evidence}</div>' if evidence else ''
             impact_html = f'<div class="arg-label">💡 Impact</div><div class="arg-detail">{impact}</div>' if impact else ''
-            html_output.append(f"""
-            <div class="arg-card">
-                <div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
-                    <div class="arg-number {side_class}-num">{i}</div>
-                    <div class="arg-claim">🔹 {claim}</div>
-                </div>
-                {evidence_html}
-                {impact_html}
-            </div>
-            """)
+            html_output.append(f"""<div class="arg-card">
+<div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+<div class="arg-number {side_class}-num">{i}</div>
+<div class="arg-claim">🔹 {claim}</div>
+</div>
+{evidence_html}
+{impact_html}
+</div>""")
             
     return "\n".join(html_output)
 
@@ -292,12 +305,10 @@ def render_verdict(text):
         
     if "verdict" in sections:
         verdict_val = clean_markdown_bold(sections["verdict"])
-        html_output.append(f"""
-        <div style="margin-bottom: 20px;">
-            <h4 style="margin: 0 0 8px 0; color: #FFD700; font-size: 1.25rem;">🏆 Verdict</h4>
-            <p style="font-size: 1.05rem; line-height: 1.6; margin: 0;">{verdict_val}</p>
-        </div>
-        """)
+        html_output.append(f"""<div style="margin-bottom: 20px;">
+<h4 style="margin: 0 0 8px 0; color: #FFD700; font-size: 1.25rem;">🏆 Verdict</h4>
+<p style="font-size: 1.05rem; line-height: 1.6; margin: 0;">{verdict_val}</p>
+</div>""")
         
     if "confidence" in sections:
         val = clean_markdown_bold(sections["confidence"])
@@ -309,40 +320,32 @@ def render_verdict(text):
             
         score_num = score_num_match.group(1) if score_num_match else ""
         badge_html = f'<div class="score-badge">📊 {score_num}/100</div>' if score_num else ''
-        html_output.append(f"""
-        <div style="margin-bottom: 20px;">
-            <h4 style="margin: 0 0 8px 0; color: #FFA500; font-size: 1.15rem;">📊 Confidence Score</h4>
-            {badge_html}
-            <p style="font-size: 0.95rem; line-height: 1.6; margin: 5px 0 0 0;">{val}</p>
-        </div>
-        """)
+        html_output.append(f"""<div style="margin-bottom: 20px;">
+<h4 style="margin: 0 0 8px 0; color: #FFA500; font-size: 1.15rem;">📊 Confidence Score</h4>
+{badge_html}
+<p style="font-size: 0.95rem; line-height: 1.6; margin: 5px 0 0 0;">{val}</p>
+</div>""")
         
     if "strongest" in sections:
         strongest_val = clean_markdown_bold(sections["strongest"])
-        html_output.append(f"""
-        <div style="margin-bottom: 20px; padding: 15px; background: rgba(128, 128, 128, 0.05); border-radius: 8px; border-left: 3px solid #007AFF;">
-            <h4 style="margin: 0 0 8px 0; color: #007AFF; font-size: 1.15rem;">⚡ Strongest Argument</h4>
-            <p style="font-size: 0.95rem; line-height: 1.6; margin: 0; font-style: italic;">{strongest_val}</p>
-        </div>
-        """)
+        html_output.append(f"""<div style="margin-bottom: 20px; padding: 15px; background: rgba(128, 128, 128, 0.05); border-radius: 8px; border-left: 3px solid #007AFF;">
+<h4 style="margin: 0 0 8px 0; color: #007AFF; font-size: 1.15rem;">⚡ Strongest Argument</h4>
+<p style="font-size: 0.95rem; line-height: 1.6; margin: 0; font-style: italic;">{strongest_val}</p>
+</div>""")
         
     if "blind_spot" in sections:
         blind_spot_val = clean_markdown_bold(sections["blind_spot"])
-        html_output.append(f"""
-        <div style="margin-bottom: 20px;">
-            <h4 style="margin: 0 0 8px 0; color: #FF3B30; font-size: 1.15rem;">🔍 Blind Spot</h4>
-            <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">{blind_spot_val}</p>
-        </div>
-        """)
+        html_output.append(f"""<div style="margin-bottom: 20px;">
+<h4 style="margin: 0 0 8px 0; color: #FF3B30; font-size: 1.15rem;">🔍 Blind Spot</h4>
+<p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">{blind_spot_val}</p>
+</div>""")
         
     if "recommendation" in sections:
         rec_val = clean_markdown_bold(sections["recommendation"])
-        html_output.append(f"""
-        <div style="margin-bottom: 10px; padding: 15px; background: rgba(128, 128, 128, 0.05); border-radius: 8px; border-left: 3px solid #34C759;">
-            <h4 style="margin: 0 0 8px 0; color: #34C759; font-size: 1.15rem;">📌 Final Recommendation</h4>
-            <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">{rec_val}</p>
-        </div>
-        """)
+        html_output.append(f"""<div style="margin-bottom: 10px; padding: 15px; background: rgba(128, 128, 128, 0.05); border-radius: 8px; border-left: 3px solid #34C759;">
+<h4 style="margin: 0 0 8px 0; color: #34C759; font-size: 1.15rem;">📌 Final Recommendation</h4>
+<p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">{rec_val}</p>
+</div>""")
         
     if not html_output:
         return f'<div style="white-space: pre-wrap;">{text}</div>'
