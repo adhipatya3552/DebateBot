@@ -383,10 +383,14 @@ def render_verdict(text):
             
         score_num = score_num_match.group(1) if score_num_match else ""
         badge_html = f'<div class="score-badge">📊 {score_num}/100</div>' if score_num else ''
+        
+        # Strip duplicate confidence score prefix from explanation text
+        explain_val = re.sub(r'^\s*\d+(?:\s*/\s*100|\s*%)?\s*(?:-|—|:\s*)?\s*', '', val).strip()
+        
         html_output.append(f"""<div style="margin-bottom: 20px;">
 <h4 style="margin: 0 0 8px 0; color: #FFA500; font-size: 1.15rem;">📊 Confidence Score</h4>
 {badge_html}
-<p style="font-size: 0.95rem; line-height: 1.6; margin: 5px 0 0 0;">{val}</p>
+<p style="font-size: 0.95rem; line-height: 1.6; margin: 5px 0 0 0;">{explain_val}</p>
 </div>""")
         
     if "strongest" in sections:
