@@ -15,19 +15,19 @@ Instead of a single LLM prompt, DebateBot simulates a structured debate panel wh
                                  │
                  ┌───────────────┴───────────────┐
                  ▼                               ▼
-     ┌───────────────────────┐       ┌───────────────────────┐
-     │   Agent 1: FOR        │       │   Agent 2: AGAINST    │
-     │   (Temp: 0.85)        │       │   (Temp: 0.85)        │
-     │   Llama 3.3/3.1 70B   │       │   Llama 3.3/3.1 70B   │
-     └───────────┬───────────┘       └───────────┬───────────┘
+      ┌───────────────────────┐       ┌───────────────────────┐
+      │   Agent 1: FOR        │       │   Agent 2: AGAINST    │
+      │   (Temp: 0.85)        │       │   (Temp: 0.85)        │
+      │   Llama 3.3 70B       │       │   Llama 3.3 70B       │
+      └───────────┬───────────┘       └───────────┬───────────┘
                  │                               │
                  └───────────────┬───────────────┘
                                  ▼
-                     ┌───────────────────────┐
-                     │    Agent 3: JUDGE     │
-                     │    (Temp: 0.15)       │
-                     │    Llama 3.3/3.1 70B   │
-                     └───────────┬───────────┘
+                      ┌───────────────────────┐
+                      │    Agent 3: JUDGE     │
+                      │    (Temp: 0.15)       │
+                      │    Llama 3.3 70B      │
+                      └───────────┬───────────┘
                                  ▼
                      ┌───────────────────────┐
                      │ Impartial Verdict     │
@@ -44,7 +44,7 @@ Instead of a single LLM prompt, DebateBot simulates a structured debate panel wh
 ## ⚡ Tech Stack (100% Free)
 | Layer | Tool / Model | Cost | Details |
 |---|---|---|---|
-| **LLM Inference** | Llama 3.3 70B / Llama 3.1 70B via Groq | **$0** | Lightning-fast inference (no token latency) |
+| **LLM Inference** | Llama 3.3 70B / Llama 3.1 8B via Groq | **$0** | Lightning-fast inference (no token latency) |
 | **Agent Framework** | LangChain | **$0** | Handles chains, templates, and multi-agent routing |
 | **Frontend UI** | Streamlit | **$0** | Elegant, high-performance interactive interface |
 | **Deployment** | Streamlit Cloud | **$0** | Live-hosted web app |
