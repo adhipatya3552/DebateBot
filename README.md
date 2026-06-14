@@ -60,8 +60,8 @@ Instead of a single LLM prompt, DebateBot simulates a structured debate panel wh
 ### Setup Instructions
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/debatebot.git
-   cd debatebot
+   git clone https://github.com/adhipatya3552/DebateBot.git
+   cd DebateBot
    ```
 
 2. **Create & Activate Virtual Environment**
