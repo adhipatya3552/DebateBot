@@ -175,7 +175,7 @@ with st.sidebar:
     
     model_name = st.selectbox(
         "Select Model",
-        options=["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "gemma2-9b-it"],
+        options=["llama-3.3-70b-versatile", "llama-3.1-8b-instant"],
         index=0,
         help="Llama 3.3 70B is recommended for high reasoning accuracy."
     )
